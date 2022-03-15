@@ -16,6 +16,7 @@ class Configuration:
     DISPLAY_NAME = "2.4"
     CALIBRATION = ((277, 3872), (357, 3685))
     ROTATION = 0
+    DISPLAY_BRIGHTNESS = 1.0
 
     # TFT FeatherWing - 3.5" 480x320 Touchscreen
     """DISPLAY_NAME = "3.5"

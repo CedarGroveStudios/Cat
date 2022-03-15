@@ -56,6 +56,10 @@ class Display:
         elif display_name in 'TFT FeatherWing - 2.4" 320x240 Touchscreen':
             import adafruit_ili9341
             import adafruit_stmpe610
+            import pwmio
+
+            self.lite = pwmio.PWMOut(board.D4)
+            self.lite.duty_cycle = int(_brightness * 0xFFFF)
 
             displayio.release_displays()  # Release display resources
             display_bus = displayio.FourWire(
@@ -76,6 +80,10 @@ class Display:
         elif display_name in 'TFT FeatherWing - 3.5" 480x320 Touchscreen':
             import adafruit_hx8357
             import adafruit_stmpe610
+            import pwmio
+
+            self.lite = pwmio.PWMOut(board.D4)
+            self.lite.duty_cycle = int(_brightness * 0xFFFF)
 
             displayio.release_displays()  # Release display resources
             display_bus = displayio.FourWire(
@@ -100,7 +108,10 @@ class Display:
         try:
             level = self.display.brightness
         except:
-            level = 1.0
+            try:
+                level = self.lite.duty_cycle / 0xFFFF
+            except:
+                level = 1.0
         return level
 
     @brightness.setter
@@ -108,7 +119,10 @@ class Display:
         try:
             self.display.brightness = level
         except:
-            print("** WARNING: Display brightness not adjustable")
+            try:
+                self.lite.duty_cycle = int(level * 0xFFFF)
+            except:
+                print("** WARNING: Display brightness not adjustable")
 
     @property
     def width(self):
@@ -137,6 +151,12 @@ class Display:
     def show(self, group):
         self.display.show(group)
         return
+
+    def neo_brightness(self, bright, color):
+        r = int(bright * ((color & 0xFF0000) >> 16))
+        g = int(bright * ((color & 0x00FF00) >> 8))
+        b = int(bright * ((color & 0x0000FF) >> 0))
+        return (r << 16) + (g << 8) + b
 
     def screen_to_rect(self, width_factor=0, height_factor=0):
         """Convert normalized screen position input (0.0 to 1.0) to the display's

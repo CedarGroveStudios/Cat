@@ -10,23 +10,32 @@ import digitalio
 import displayio
 import vectorio
 import adafruit_imageload
+import neopixel
+from random import randint
+from rainbowio import colorwheel
 import cedargrove_display
 from neko_configuration import Configuration as config
 
 BACKGROUND_COLOR = config.BACKGROUND_COLOR
+DISPLAY_BRIGHTNESS = config.DISPLAY_BRIGHTNESS
 ANIMATION_TIME = config.ANIMATION_TIME
 USE_TOUCH_OVERLAY = config.USE_TOUCH_OVERLAY
 TOUCH_COOLDOWN = config.TOUCH_COOLDOWN
 LASER_DOT_COLOR = config.LASER_DOT_COLOR
+CAT_QUANTITY = 5
 
 #displayio.release_displays()
 
 display = cedargrove_display.Display(
     name=config.DISPLAY_NAME,
     calibration=config.CALIBRATION,
+    brightness= DISPLAY_BRIGHTNESS,
 )
 
 ts = display.ts
+
+neo = neopixel.NeoPixel(board.NEOPIXEL, 1)
+neo[0] = display.neo_brightness(DISPLAY_BRIGHTNESS / 5, BACKGROUND_COLOR)
 
 
 class NekoAnimatedSprite(displayio.TileGrid):
@@ -165,7 +174,7 @@ class NekoAnimatedSprite(displayio.TileGrid):
      of the display, so we know to start scratching.
     """
 
-    def __init__(self, animation_time=0.3, display_size=None):
+    def __init__(self, animation_time=0.3, display_size=None, body_color=None):
         self._display_size = display_size
 
         self._moving_to = None
@@ -175,6 +184,9 @@ class NekoAnimatedSprite(displayio.TileGrid):
             bitmap=displayio.Bitmap,
             palette=displayio.Palette,
         )
+
+        if body_color:
+            neko_palette[5] = body_color
 
         # make the first color transparent
         neko_palette.make_transparent(0)
@@ -544,16 +556,27 @@ background_group.append(background_tilegrid)
 # add background_group to main_group
 main_group.append(background_group)
 
-# create Neko
+# create a herd of cats (maximum of 5)
+nekos = []
+CAT_QUANTITY = min(max(0, CAT_QUANTITY), 5)
+for i in range(CAT_QUANTITY):
+    nekos.append(NekoAnimatedSprite(
+        animation_time=ANIMATION_TIME, display_size=(display.width, display.height), body_color=colorwheel(255 / CAT_QUANTITY * i),
+    ))
+    nekos[i].x = display.width // 2 - nekos[i].TILE_WIDTH // 2
+    nekos[i].y = display.height // 2 - nekos[i].TILE_HEIGHT // 2
+    main_group.append(nekos[i])
+
+# create primary Neko
 neko = NekoAnimatedSprite(
     animation_time=ANIMATION_TIME, display_size=(display.width, display.height)
 )
 
-# put Neko in center of display
+# put primary Neko in center of display
 neko.x = display.width // 2 - neko.TILE_WIDTH // 2
 neko.y = display.height // 2 - neko.TILE_HEIGHT // 2
 
-# add neko to main_group
+# add primary neko to main_group
 main_group.append(neko)
 
 # show main_group on the display
@@ -579,6 +602,9 @@ if USE_TOUCH_OVERLAY:
 while True:
     # update Neko to do animations and movements
     neko.update()
+
+    for i in range(CAT_QUANTITY):
+        nekos[i].update()
 
     if USE_TOUCH_OVERLAY:
 
