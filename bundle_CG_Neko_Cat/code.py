@@ -35,7 +35,7 @@ display = cedargrove_display.Display(
 ts = display.ts
 
 neo = neopixel.NeoPixel(board.NEOPIXEL, 1)
-neo[0] = display.neo_brightness(DISPLAY_BRIGHTNESS / 5, BACKGROUND_COLOR)
+neo[0] = display.color_brightness(DISPLAY_BRIGHTNESS / 5, BACKGROUND_COLOR)
 
 
 class NekoAnimatedSprite(displayio.TileGrid):
@@ -174,7 +174,7 @@ class NekoAnimatedSprite(displayio.TileGrid):
      of the display, so we know to start scratching.
     """
 
-    def __init__(self, animation_time=0.3, display_size=None, body_color=None):
+    def __init__(self, animation_time=0.3, display_size=None, body_color=None, body_outline=None):
         self._display_size = display_size
 
         self._moving_to = None
@@ -187,6 +187,9 @@ class NekoAnimatedSprite(displayio.TileGrid):
 
         if body_color:
             neko_palette[5] = body_color
+
+        if body_outline:
+            neko_palette[1] = body_outline
 
         # make the first color transparent
         neko_palette.make_transparent(0)
@@ -560,8 +563,12 @@ main_group.append(background_group)
 nekos = []
 CAT_QUANTITY = min(max(0, CAT_QUANTITY), 5)
 for i in range(CAT_QUANTITY):
+    color = config.CAT_COLORS[i]
+    outline = display.color_brightness(0.6, color ^ 0xffffff)  # invert and dim outline color
     nekos.append(NekoAnimatedSprite(
-        animation_time=ANIMATION_TIME, display_size=(display.width, display.height), body_color=colorwheel(255 / CAT_QUANTITY * i),
+        animation_time=ANIMATION_TIME, display_size=(display.width, display.height),
+        body_color=color,
+        body_outline=outline,
     ))
     nekos[i].x = display.width // 2 - nekos[i].TILE_WIDTH // 2
     nekos[i].y = display.height // 2 - nekos[i].TILE_HEIGHT // 2
@@ -598,6 +605,8 @@ if USE_TOUCH_OVERLAY:
 
     # add it to the main_group so it gets shown on the display when ready
     main_group.append(circle)
+
+time.sleep(3)
 
 while True:
     # update Neko to do animations and movements

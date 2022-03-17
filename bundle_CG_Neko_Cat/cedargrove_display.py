@@ -152,7 +152,7 @@ class Display:
         self.display.show(group)
         return
 
-    def neo_brightness(self, bright, color):
+    def color_brightness(self, bright, color):
         r = int(bright * ((color & 0xFF0000) >> 16))
         g = int(bright * ((color & 0x00FF00) >> 8))
         b = int(bright * ((color & 0x0000FF) >> 0))
