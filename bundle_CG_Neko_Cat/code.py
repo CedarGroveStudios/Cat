@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2022 TimCocks for Adafruit Industries
 #
 # SPDX-License-Identifier: MIT
-# Cedar Grove display and config changes: 2022-03-17
+# Cedar Grove display and config changes: 2022-03-31
 
 """Is there a way to perform an object deepcopy in CircuitPython? Trying to
 create a mutable duplicate of a bitmap palette object within multiple class
@@ -152,6 +152,11 @@ while True:
 
     for i in range(CAT_QUANTITY):
         nekos[i].update()
+
+    # Bring lowest cats to the front; sort by y coordinate
+    # (this isn't ideal, but is a good example of an approach to perspective)
+    # (collision detection/avoidance should help)
+    main_group.sort(key=lambda cat: cat.y)
 
     if USE_TOUCH_OVERLAY:
 
