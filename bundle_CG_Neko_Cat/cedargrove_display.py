@@ -1,10 +1,9 @@
 # SPDX-FileCopyrightText: 2022 Cedar Grove Maker Studios
 # SPDX-License-Identifier: MIT
 
-# cedargrove_display.py  2022-02-22 v0.0222  Cedar Grove Studios
+# cedargrove_display.py  2022-04-01 v0.0401  Cedar Grove Studios
 
 import board
-import busio
 import digitalio
 import displayio
 
@@ -53,7 +52,7 @@ class Display:
                 size=(self.display.width, self.display.height),
             )
 
-        elif display_name in 'TFT FeatherWing - 2.4" 320x240 Touchscreen':
+        elif display_name in 'TFT FeatherWing - 2.4-inch 320x240 Touchscreen':
             import adafruit_ili9341
             import adafruit_stmpe610
             import pwmio
@@ -77,7 +76,7 @@ class Display:
                 touch_flip=(False, False),
             )
 
-        elif display_name in 'TFT FeatherWing - 3.5" 480x320 Touchscreen':
+        elif display_name in 'TFT FeatherWing - 3.5-inch 480x320 Touchscreen':
             import adafruit_hx8357
             import adafruit_stmpe610
             import pwmio

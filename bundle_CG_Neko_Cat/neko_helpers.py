@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2022 TimCocks for Adafruit Industries
+#
+# SPDX-License-Identifier: MIT
+# Cedar Grove fill, outline, and sort key changes: 2022-04-01 v0.0401
+
 import displayio
 import time
 import random
@@ -137,6 +142,10 @@ class NekoAnimatedSprite(displayio.TileGrid):
     :param tuple display_size: Tuple containing width and height of display.
      Defaults to values from board.DISPLAY. Used to determine when we are at the edge
      of the display, so we know to start scratching.
+    :param integer fill: Integer value representing 24-bit RGB fill color value.
+    :param integer outline: Integer value representing 24-bit RGB outline color value.
+    :param displayio.sprite_sheet sprites: Bitmap sprite sheet object.
+    :param displayio.palette palette: Palette object for sprite sheet.
     """
 
     def __init__(self, animation_time=0.3, display_size=None, fill=None,
@@ -148,13 +157,6 @@ class NekoAnimatedSprite(displayio.TileGrid):
 
         self._sprite_sheet = sprites
         self._neko_palette = palette
-
-        """# Load the sprite sheet bitmap and palette
-        self._sprite_sheet, self._neko_palette = adafruit_imageload.load(
-            "/neko_cat_spritesheet.bmp",
-            bitmap=displayio.Bitmap,
-            palette=displayio.Palette,
-        )"""
 
         if fill:
             self._neko_palette[5] = fill
@@ -235,6 +237,16 @@ class NekoAnimatedSprite(displayio.TileGrid):
         else:
             # None means not moving to a target location
             self._moving_to = None
+
+    @property
+    def sort_key(self):
+        """
+        Generate a sort key value based upon vertical position and fill
+        color. Assumes that the color is unique to the class instance.
+
+        :return: sort_key
+        """
+        return self.y + (self._neko_palette[5] / 0xF00000)
 
     @property
     def animation_time(self):

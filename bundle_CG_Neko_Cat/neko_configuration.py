@@ -1,46 +1,19 @@
 # SPDX-FileCopyrightText: 2022 Cedar Grove Maker Studios
 # SPDX-License-Identifier: MIT
 
-# neko_configuration.py  2022-02-22 v0.0222  Cedar Grove Studios
+# neko_configuration.py  2022-04-01 v0.0401  Cedar Grove Studios
 
 
 class Configuration:
     # specify display and touchscreen device using some unique characters
     #   from the display name
 
-    """# built-in display
-    DISPLAY_NAME = "built-in"
-    CALIBRATION = ((5200, 59000), (5800, 57000))
-    ROTATION = 0"""
-
-    # TFT FeatherWing - 2.4" 320x240 Touchscreen
-    DISPLAY_NAME = "2.4"
-    CALIBRATION = ((277, 3872), (357, 3685))
-    ROTATION = 0
-    DISPLAY_BRIGHTNESS = 1.0
-
-    # TFT FeatherWing - 3.5" 480x320 Touchscreen
-    """DISPLAY_NAME = "3.5"
-    CALIBRATION = ((214, 3879), (421, 3775))
-    ROTATION = 0"""
-
-    # display background color hex notation
-    BACKGROUND_COLOR = 0x007070
-
-    # how long to wait between animation frames in seconds
-    ANIMATION_TIME = 0.3
-
-    # whether to use a touch overlay
-    USE_TOUCH_OVERLAY = True
-
-    # how long to wait for next valid touch event in seconds
-    TOUCH_COOLDOWN = 0.1
-
-    # laser dot color in hex notation
-    LASER_DOT_COLOR = 0xFF0000
+    # Number of on-screen cats; maximum of 6
+    CAT_QUANTITY = 6
 
     # cat color table
     CAT_COLORS = [
+        0xFFFFFF,  # white
         0x000001,  # black
         0x808080,  # gray
         0xF0A000,  # orange
@@ -48,3 +21,34 @@ class Configuration:
         0x8080FF,  # blue
         0xF000A0,  # purple
         ]
+
+    # laser dot color in hex notation
+    LASER_DOT_COLOR = 0xFF0000
+
+    # display background color hex notation
+    BACKGROUND_COLOR = 0x801080
+
+    # how long to wait between animation frames in seconds
+    ANIMATION_TIME = 0.3
+
+    """# built-in display
+    DISPLAY_NAME = "built-in"
+    CALIBRATION = ((5200, 59000), (5800, 57000))
+    ROTATION = 0"""
+
+    # TFT FeatherWing - 2.4" 320x240 Touchscreen
+    DISPLAY_NAME = "2.4-inch"
+    CALIBRATION = ((277, 3872), (357, 3685))
+    ROTATION = 0
+    DISPLAY_BRIGHTNESS = 1.0
+
+    # TFT FeatherWing - 3.5" 480x320 Touchscreen
+    """DISPLAY_NAME = "3.5-inch"
+    CALIBRATION = ((214, 3879), (421, 3775))
+    ROTATION = 0"""
+
+    # whether to use a touch overlay
+    USE_TOUCH_OVERLAY = True
+
+    # how long to wait for next valid touch event in seconds
+    TOUCH_COOLDOWN = 0.1
