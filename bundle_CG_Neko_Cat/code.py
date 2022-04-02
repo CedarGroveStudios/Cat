@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2022 TimCocks for Adafruit Industries
 #
 # SPDX-License-Identifier: MIT
-# Cedar Grove display and config changes: 2022-04-01 v0.0401
+# Cedar Grove display and config changes: 2022-04-02 v0.0402
 
 import gc
 import time
@@ -14,8 +14,6 @@ import neopixel
 import cedargrove_display
 from neko_configuration import Configuration as config
 from neko_helpers import NekoAnimatedSprite
-
-#displayio.release_displays()
 
 display = cedargrove_display.Display(
     name=config.DISPLAY_NAME,
@@ -114,7 +112,6 @@ if config.USE_TOUCH_OVERLAY:
 
 gc.collect()
 print(f"free memory {gc.mem_free()/1000} kb")
-time.sleep(3)
 
 while True:
     gc.collect()

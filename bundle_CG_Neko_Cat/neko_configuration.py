@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2022 Cedar Grove Maker Studios
 # SPDX-License-Identifier: MIT
 
-# neko_configuration.py  2022-04-01 v0.0401  Cedar Grove Studios
+# neko_configuration.py  2022-04-02 v0.0402  Cedar Grove Studios
 
 
 class Configuration:
@@ -31,21 +31,23 @@ class Configuration:
     # how long to wait between animation frames in seconds
     ANIMATION_TIME = 0.3
 
-    """# built-in display
+    # built-in display
     DISPLAY_NAME = "built-in"
     CALIBRATION = ((5200, 59000), (5800, 57000))
-    ROTATION = 0"""
+    ROTATION = 0
+    DISPLAY_BRIGHTNESS = 1.0
 
-    # TFT FeatherWing - 2.4" 320x240 Touchscreen
+    """# TFT FeatherWing - 2.4" 320x240 Touchscreen
     DISPLAY_NAME = "2.4-inch"
     CALIBRATION = ((277, 3872), (357, 3685))
     ROTATION = 0
-    DISPLAY_BRIGHTNESS = 1.0
+    DISPLAY_BRIGHTNESS = 1.0"""
 
     # TFT FeatherWing - 3.5" 480x320 Touchscreen
     """DISPLAY_NAME = "3.5-inch"
     CALIBRATION = ((214, 3879), (421, 3775))
-    ROTATION = 0"""
+    ROTATION = 0
+    DISPLAY_BRIGHTNESS = 1.0"""
 
     # whether to use a touch overlay
     USE_TOUCH_OVERLAY = True
