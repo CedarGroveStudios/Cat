@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2022 Cedar Grove Maker Studios
 # SPDX-License-Identifier: MIT
 
-# cedargrove_display.py  2022-04-01 v0.0401  Cedar Grove Studios
+# cedargrove_display.py  2022-04-02 v0.0402  Cedar Grove Studios
 
 import board
 import digitalio
@@ -13,6 +13,9 @@ class Display:
     built-in displays. Instantiates the display and touchscreen as specified by
     the `name` string and the touchscreen zero-rotation `calibration` value.
     Display brightness may not be supported on some displays.
+
+    To support PWM brightness control for TFT FeatherWing displays, connect the
+    Feather `D4` pad to the display's `Lite` or `LITE` pad.
 
     To do: Change touchscreen initialization to accomodate various rotation
            values.
