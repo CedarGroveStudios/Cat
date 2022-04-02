@@ -15,7 +15,7 @@ import cedargrove_display
 from neko_configuration import Configuration as config
 from neko_helpers import NekoAnimatedSprite
 
-displayio.release_displays()
+#displayio.release_displays()
 
 display = cedargrove_display.Display(
     name=config.DISPLAY_NAME,
