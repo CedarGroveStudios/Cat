@@ -6,6 +6,7 @@
 import board
 import digitalio
 import displayio
+import time
 
 
 class Display:
@@ -14,13 +15,8 @@ class Display:
     the `name` string and the touchscreen zero-rotation `calibration` value.
     Display brightness may not be supported on some displays.
 
-    To support PWM brightness control for TFT FeatherWing displays, connect the
-    Feather `D4` pad to the display's `Lite` or `LITE` pad.
-
-    To do: Change touchscreen initialization to accomodate various rotation
-           values.
-           Convert to list or dictionary-centric approach to managing display
-           names and parameters."""
+    To do: Change touchscreen initialization for various rotation values.
+           Use list or dictionary approach for display names and parameters."""
 
     def __init__(self, name="", rotation=0, calibration=None, brightness=1):
 
@@ -107,6 +103,9 @@ class Display:
 
     @property
     def brightness(self):
+        """The display brightness level from 0.0 (dim) to 1.0 (bright).
+        :param float new_brightness:
+        """
         try:
             level = self.display.brightness
         except:
@@ -117,38 +116,67 @@ class Display:
         return level
 
     @brightness.setter
-    def brightness(self, level):
+    def brightness(self, new_brightness):
+        new_brightness = min(max(new_brightness, 0), 1.0)
         try:
-            self.display.brightness = level
+            self.display.brightness = new_brightness
         except:
             try:
-                self.lite.duty_cycle = int(level * 0xFFFF)
+                self.lite.duty_cycle = int(new_brightness * 0xFFFF)
             except:
-                print("** WARNING: Display brightness not adjustable")
+                raise RuntimeError('** Display brightness not adjustable')
+                return
 
     @property
     def width(self):
+        """The width (x) of the display in pixels.
+        :param integer width:
+        """
         return self.display.width
 
     @width.setter
-    def width(self, value):
-        self.display.width = value
+    def width(self, new_width):
+        self.display.width = new_width
 
     @property
     def height(self):
+        """The height (y) of the display in pixels.
+        :param integer height:
+        """
         return self.display.height
 
     @height.setter
-    def height(self, value):
-        self.display.height = value
+    def height(self, new_height):
+        self.display.height = new_height
 
     @property
     def rotation(self):
+        """The display rotation value in degrees.
+        :param integer new_value
+        """
         return self.display._rotation
 
     @rotation.setter
-    def rotation(self, value):
-        self.display.rotation = value
+    def rotation(self, new_rotation):
+        self.display.rotation = new_rotation
+
+    def dim(self, new_brightness):
+        """Gradually dim the display to a new brightness level.
+        :param float new_brightness:
+        """
+        while self.brightness > new_brightness:
+            self.brightness -= 0.04
+            time.sleep(0.1)
+        return True
+
+    def brighten(self, new_brightness):
+        """Gradually brighten the display to a new brightness level.
+        :param float new_brightness:
+        """
+        while self.brightness < new_brightness:
+            self.brightness += 0.04
+            time.sleep(0.1)
+        return False
 
     def show(self, group):
         self.display.show(group)

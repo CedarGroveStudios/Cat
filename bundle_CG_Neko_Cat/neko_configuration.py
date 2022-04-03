@@ -31,6 +31,12 @@ class Configuration:
     # how long to wait between animation frames in seconds
     ANIMATION_TIME = 0.3
 
+    # How long before the display sleeps (seconds)
+    DISPLAY_ACTIVE_TIME = 2 * 60
+
+    # How long before the automatically reawakens (seconds)
+    DISPLAY_SLEEP_TIME = 10 * 60
+
     # built-in display
     DISPLAY_NAME = "built-in"
     CALIBRATION = ((5200, 59000), (5800, 57000))
