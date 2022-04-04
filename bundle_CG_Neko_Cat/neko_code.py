@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2022 TimCocks for Adafruit Industries
 #
 # SPDX-License-Identifier: MIT
-# Cedar Grove display and config changes: 2022-04-02 v0.0402
+# Cedar Grove display, screensaver, and config changes: 2022-04-03 v0.0403
 
 import gc
 import time
@@ -89,13 +89,13 @@ for i in range(config.CAT_QUANTITY):
 
 # Sort the group based on sort_key (y coordinate and color)
 cat_group.sort(key=lambda cat: cat.sort_key)
-# Add the cat group and show main_group on the display
+# Add the cat group
 main_group.append(cat_group)
+
+# Darken the display and NeoPixel then show the main_group
 display.brightness = 0
 neo[0] = display.color_brightness(display.brightness / 5, config.BACKGROUND_COLOR)
 display.show(main_group)
-_display_dimmed = display.brighten(config.DISPLAY_BRIGHTNESS)
-neo[0] = display.color_brightness(display.brightness / 5, config.BACKGROUND_COLOR)
 
 if config.USE_TOUCH_OVERLAY:
     # initialize laser palette
@@ -117,7 +117,8 @@ if config.USE_TOUCH_OVERLAY:
 gc.collect()
 print(f"free memory {gc.mem_free()/1000} kb")
 
-_start_time = time.monotonic()
+_screensaver_start_time = time.monotonic()
+_screensaver_state = "RESTORE"
 
 while True:
     gc.collect()
@@ -129,7 +130,6 @@ while True:
     cat_group.sort(key=lambda cat: cat.sort_key)
 
     if config.USE_TOUCH_OVERLAY:
-
         # if HomeNeko (nekos[0]) is not moving to a location
         if not nekos[0].moving_to:
             # hide the laser dot circle by moving it off of the display
@@ -146,12 +146,13 @@ while True:
 
             # if anything is being touched
             if touch_location:
-                if _display_dimmed:
-                    # reset the screen timeout clock to restore the screen
-                    _start_time = _now - config.DISPLAY_ACTIVE_TIME - config.DISPLAY_SLEEP_TIME
+                if _screensaver_state in ("DIMMED", "DIM"):
+                    # Restore screen brightness if touched if dimming or dimmed
+                    _screensaver_state = "RESTORE"
                 else:
-                    # update the timestamp for cooldown enforcement
-                    LAST_TOUCH_TIME = _start_time = _now
+                    # update the timestamp for touch cooldown enforcement
+                    #   and reset the screensaver timer
+                    LAST_TOUCH_TIME = _screensaver_start_time = _now
 
                     # move the laser dot circle to the x/y coordinates being touched
                     circle.x = touch_location[0]
@@ -161,15 +162,32 @@ while True:
 
                     # tell Neko to move to the x/y coordinates being touched.
                     nekos[0].moving_to = (touch_location[0], touch_location[1])
+
+    # Check the screensaver timer to see if it's time to dim display brightness
+    if _screensaver_state == "ACTIVE" and time.monotonic() - _screensaver_start_time >= config.DISPLAY_ACTIVE_TIME:
+        _screensaver_state = "DIM"
+    # Check the screensaver timer to see if the display brightness should be restored
+    if _screensaver_state == "DIMMED" and time.monotonic() - _screensaver_start_time >= config.DISPLAY_ACTIVE_TIME + config.DISPLAY_SLEEP_TIME:
+        _screensaver_state = "RESTORE"
+
+    # Gradually reduce display brightness while animating
+    if _screensaver_state == "DIM":
+        _new_brightness = max(display.brightness - 0.001, 0)
+        display.brightness = _new_brightness
+        neo[0] = display.color_brightness(_new_brightness / 5, config.BACKGROUND_COLOR)
+        # When the target brightness is reached, set the state to DIMMED
+        if display.brightness == 0:
+            _screensaver_state = "DIMMED"
+
+    # Gradually increase display brightness while animating
+    if _screensaver_state == "RESTORE":
+        _new_brightness = min(display.brightness + 0.001, config.DISPLAY_BRIGHTNESS)
+        display.brightness = _new_brightness
+        neo[0] = display.color_brightness(_new_brightness / 5, config.BACKGROUND_COLOR)
+        # When the target brightness is reached, set the state to ACTIVE
+        if display.brightness == config.DISPLAY_BRIGHTNESS:
+            _screensaver_start_time = time.monotonic()
+            _screensaver_state = "ACTIVE"
+
+    # Print the display frame refresh rate (debug only)
     #print(f"frame: {time.monotonic() - _now} sec")
-
-    # Check to see if it's time to dim the screen
-    if time.monotonic() - _start_time >= config.DISPLAY_ACTIVE_TIME:
-        _display_dimmed = display.dim(0)
-        neo[0] = display.color_brightness(display.brightness / 5, config.BACKGROUND_COLOR)
-
-    # Check to see if the screen should be brightened
-    if time.monotonic() - _start_time >= config.DISPLAY_ACTIVE_TIME + config.DISPLAY_SLEEP_TIME:
-        _display_dimmed = display.brighten(config.DISPLAY_BRIGHTNESS)
-        neo[0] = display.color_brightness(display.brightness / 5, config.BACKGROUND_COLOR)
-        _start_time = time.monotonic()
