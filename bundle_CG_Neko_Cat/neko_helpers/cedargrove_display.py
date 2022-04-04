@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2022 Cedar Grove Maker Studios
 # SPDX-License-Identifier: MIT
 
-# cedargrove_display.py  2022-04-02 v0.0402  Cedar Grove Studios
+# cedargrove_display.py  2022-04-04 v0.0404  Cedar Grove Studios
 
 import board
 import digitalio
@@ -56,7 +56,8 @@ class Display:
             import adafruit_stmpe610
             import pwmio
 
-            self.lite = pwmio.PWMOut(board.D4)
+            # Brightness PWM frequency is not critical for this display
+            self.lite = pwmio.PWMOut(board.D4, frequency=500)
             self.lite.duty_cycle = int(_brightness * 0xFFFF)
 
             displayio.release_displays()  # Release display resources
@@ -80,7 +81,9 @@ class Display:
             import adafruit_stmpe610
             import pwmio
 
-            self.lite = pwmio.PWMOut(board.D4)
+            # For brightness linearity, PWM frequency must be less than 1000Hz
+            #   per the FAN5333B backlight LED controller datasheet
+            self.lite = pwmio.PWMOut(board.D4, frequency=500)
             self.lite.duty_cycle = int(_brightness * 0xFFFF)
 
             displayio.release_displays()  # Release display resources

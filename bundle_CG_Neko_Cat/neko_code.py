@@ -172,7 +172,7 @@ while True:
 
     # Gradually reduce display brightness while animating
     if _screensaver_state == "DIM":
-        _new_brightness = max(display.brightness - 0.001, 0)
+        _new_brightness = max(display.brightness - 0.01, 0)
         display.brightness = _new_brightness
         neo[0] = display.color_brightness(_new_brightness / 5, config.BACKGROUND_COLOR)
         # When the target brightness is reached, set the state to DIMMED
@@ -181,7 +181,7 @@ while True:
 
     # Gradually increase display brightness while animating
     if _screensaver_state == "RESTORE":
-        _new_brightness = min(display.brightness + 0.001, config.DISPLAY_BRIGHTNESS)
+        _new_brightness = min(display.brightness + 0.01, config.DISPLAY_BRIGHTNESS)
         display.brightness = _new_brightness
         neo[0] = display.color_brightness(_new_brightness / 5, config.BACKGROUND_COLOR)
         # When the target brightness is reached, set the state to ACTIVE
