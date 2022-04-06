@@ -45,9 +45,10 @@ class Spectrum:
     to do:
       investigate adding gamma
     """
-    def __init__(self, colors=None, mode="normal"):
+    def __init__(self, colors=None, mode="normal", gamma=0.5):
         self._colors = colors
         self._mode = mode
+        self._gamma = gamma
         self._index_granularity = (2 ** 16) - 1  # maximum index granularity
 
         # Select normal or "wavelength-of-light" -style spectrum
@@ -58,9 +59,9 @@ class Spectrum:
 
         self._number_of_zones = len(self._colors)
 
-        self._reds = [(r >> 16) & 0xFF for r in colors]
-        self._grns = [(g >>  8) & 0xFF for g in colors]
-        self._blus = [(b >>  0) & 0xFF for b in colors]
+        self._reds = [((r >> 16) & 0xFF) / 0xFF for r in colors]
+        self._grns = [((g >>  8) & 0xFF) / 0xFF for g in colors]
+        self._blus = [((b >>  0) & 0xFF) / 0xFF for b in colors]
 
         self._zones = [(zone / self._number_of_zones, (zone + 1) / self._number_of_zones) for zone in range(int(self._number_of_zones))]
 
@@ -68,6 +69,14 @@ class Spectrum:
     @property
     def mode(self):
         return self._mode
+
+    @property
+    def gamma(self):
+        return self._gamma
+
+    @gamma.setter
+    def gamma(self, new_gamma=1.0):
+        self._gamma = new_gamma
 
     def color(self, index=0):
         """ Converts a spectral index value to an RGB color value.
@@ -89,8 +98,8 @@ class Spectrum:
         grn = map_range(self._index, zone_start, zone_end, self._grns[zone], self._grns[next_zone])
         blu = map_range(self._index, zone_start, zone_end, self._blus[zone], self._blus[next_zone])
 
-        red = int(round(red, 0))
-        grn = int(round(grn, 0))
-        blu = int(round(blu, 0))
+        red = int(round((red ** self._gamma) * 0xFF, 0))
+        grn = int(round((grn ** self._gamma) * 0xFF, 0))
+        blu = int(round((blu ** self._gamma) * 0xFF, 0))
 
         return (int(red) << 16) + (int(grn) << 8) + int(blu)

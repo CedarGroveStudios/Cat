@@ -20,16 +20,18 @@ main_group = displayio.Group()
 # first color will blend with last color unless mode="light"
 VISIBLE_LIGHT = [
         0xff0000,
-        0xffff00,
+        #0xffff00,
         0x00ff00,
-        0x00ffff,
+        #0x00ffff,
         0x0000ff,
-        0xff00ff,
+        0x300040,
     ]
 
+GAMMA = 0.5
+
 # Instantiate the background color spectrum
-spectrum1 = Spectrum(VISIBLE_LIGHT, mode="normal")
-spectrum2 = Spectrum(VISIBLE_LIGHT, mode="light")
+spectrum1 = Spectrum(VISIBLE_LIGHT, mode="normal", gamma=GAMMA)
+spectrum2 = Spectrum(VISIBLE_LIGHT, mode="light", gamma=GAMMA)
 
 neo_brightness = config.DISPLAY_BRIGHTNESS / 5
 
@@ -46,14 +48,14 @@ display.show(main_group)
 
 
 while True:
-    print(f"mode: {spectrum1.mode}")
+    """print(f"mode: {spectrum1.mode}  gamma: {spectrum1.gamma:3.1f}")
     for i in range(granularity):
         color = spectrum1.color(i/granularity)
         main_group[i].fill = color
 
-    time.sleep(3)
-    print(f"mode: {spectrum2.mode}")
+    time.sleep(3)"""
 
+    print(f"mode: {spectrum2.mode}  gamma: {spectrum2.gamma:3.1f}")
     for i in range(granularity):
         color = spectrum2.color(i/granularity)
         main_group[i].fill = color
