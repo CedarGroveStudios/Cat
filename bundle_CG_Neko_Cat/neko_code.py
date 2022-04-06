@@ -185,10 +185,8 @@ while True:
         if display.brightness == 0:
             _screensaver_state = "DIMMED"
             # Change the background color randomly each time display is DIMMED
-            print(f"old background color: {hex(background_palette[0])}")
             background_palette[0] = spectrum.color(random.randrange(0, 100)/100)
             neo[0] = display.color_brightness(display.brightness / 5, background_palette[0])
-            print(f"new background color: {hex(background_palette[0])}")
 
     # Gradually increase display brightness while animating
     if _screensaver_state == "RESTORE":
