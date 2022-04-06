@@ -29,7 +29,7 @@ neo = neopixel.NeoPixel(board.NEOPIXEL, 1)
 neo[0] = display.color_brightness(config.DISPLAY_BRIGHTNESS / 5, config.BKG_SPECTRUM[0])
 
 # Instantiate the background color spectrum
-spectrum = Spectrum(config.BKG_SPECTRUM, mode="wrap", gamma=0.5)
+spectrum = Spectrum(config.BKG_SPECTRUM, mode="wrap", gamma=1)
 
 # Variable to store the timestamp of previous touch event
 LAST_TOUCH_TIME = -1
@@ -185,8 +185,10 @@ while True:
         if display.brightness == 0:
             _screensaver_state = "DIMMED"
             # Change the background color randomly each time display is DIMMED
+            print(f"old background color: {hex(background_palette[0])}")
             background_palette[0] = spectrum.color(random.randrange(0, 100)/100)
             neo[0] = display.color_brightness(display.brightness / 5, background_palette[0])
+            print(f"new background color: {hex(background_palette[0])}")
 
     # Gradually increase display brightness while animating
     if _screensaver_state == "RESTORE":
