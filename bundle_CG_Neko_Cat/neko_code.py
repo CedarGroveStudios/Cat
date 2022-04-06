@@ -1,20 +1,22 @@
 # SPDX-FileCopyrightText: 2022 TimCocks for Adafruit Industries
 #
 # SPDX-License-Identifier: MIT
-# Cedar Grove display, screensaver, and config changes: 2022-04-03 v0.0403
+# Cedar Grove display, screensaver, and config changes: 2022-04-05 v0.0405
 
 import gc
 import time
 import board
-import displayio
 import random
+import displayio
 import vectorio
-import adafruit_imageload
 import neopixel
-import neko_helpers.cedargrove_display as cedargrove_display
-from neko_configuration import Configuration as config
+import adafruit_imageload
 from neko_helpers.neko import NekoAnimatedSprite
+from neko_helpers.color_spectrum import Spectrum
+from neko_configuration import Configuration as config
+import neko_helpers.cedargrove_display as cedargrove_display
 
+# Instantiate the display and touchscreen
 display = cedargrove_display.Display(
     name=config.DISPLAY_NAME,
     calibration=config.CALIBRATION,
@@ -22,38 +24,42 @@ display = cedargrove_display.Display(
 )
 ts = display.ts
 
+# Instantiate the neopixel; set the background color and relative brightness
 neo = neopixel.NeoPixel(board.NEOPIXEL, 1)
-neo[0] = display.color_brightness(config.DISPLAY_BRIGHTNESS / 5, config.BACKGROUND_COLOR)
+neo[0] = display.color_brightness(config.DISPLAY_BRIGHTNESS / 5, config.BKG_SPECTRUM[0])
 
-# variable to store the timestamp of previous touch event
+# Instantiate the background color spectrum
+spectrum = Spectrum(config.BKG_SPECTRUM, mode="wrap", gamma=0.5)
+
+# Variable to store the timestamp of previous touch event
 LAST_TOUCH_TIME = -1
 
-# create displayio Group
+# Create displayio groups
 main_group = displayio.Group()
 cat_group = displayio.Group()
 
-# create background group, seperate from main_group so that
-# it can be scaled, which saves RAM.
+# Create the background group separate from main_group so that it can be scaled,
+#   which saves RAM.
 background_group = displayio.Group(scale=max(display.width, display.height) // 20)
 
-# create bitmap to hold solid color background
+# Create bitmap to hold solid color background
 background_bitmap = displayio.Bitmap(20, 15, 1)
 
-# create background palette
+# Create background palette
 background_palette = displayio.Palette(1)
 
-# set the background color into the palette
-background_palette[0] = config.BACKGROUND_COLOR
+# Set the background color into the palette
+background_palette[0] = config.BKG_SPECTRUM[0]
 
-# create a tilegrid to show the background bitmap
+# Create a tilegrid to show the background bitmap
 background_tilegrid = displayio.TileGrid(
     background_bitmap, pixel_shader=background_palette
 )
 
-# append the tilegrid to the group.
+# Append the tilegrid to the group.
 background_group.append(background_tilegrid)
 
-# add background_group to main_group
+# Add background_group to main_group
 main_group.append(background_group)
 
 gc.collect()
@@ -94,7 +100,7 @@ main_group.append(cat_group)
 
 # Darken the display and NeoPixel then show the main_group
 display.brightness = 0
-neo[0] = display.color_brightness(display.brightness / 5, config.BACKGROUND_COLOR)
+neo[0] = display.color_brightness(display.brightness / 5, background_palette[0])
 display.show(main_group)
 
 if config.USE_TOUCH_OVERLAY:
@@ -130,21 +136,21 @@ while True:
     cat_group.sort(key=lambda cat: cat.sort_key)
 
     if config.USE_TOUCH_OVERLAY:
-        # if HomeNeko (nekos[0]) is not moving to a location
+        # If HomeNeko (nekos[0]) is not moving to a location
         if not nekos[0].moving_to:
-            # hide the laser dot circle by moving it off of the display
+            # Hide the laser dot circle by moving it off of the display
             circle.x = -10
             circle.y = -10
 
         _now = time.monotonic()
 
-        # if the touch cooldown has elapsed since previous touch event
+        # If the touch cooldown has elapsed since previous touch event
         if _now > LAST_TOUCH_TIME + config.TOUCH_COOLDOWN:
 
-            # read current touch data from overlay
+            # Read current touch data from overlay
             touch_location = ts.touch_point
 
-            # if anything is being touched
+            # If anything is being touched
             if touch_location:
                 if _screensaver_state in ("DIMMED", "DIM"):
                     # Restore screen brightness if touched if dimming or dimmed
@@ -160,7 +166,7 @@ while True:
 
                     # print("placing laser dot at: {}".format(touch_location))
 
-                    # tell Neko to move to the x/y coordinates being touched.
+                    # Tell Neko to move to the x/y coordinates being touched
                     nekos[0].moving_to = (touch_location[0], touch_location[1])
 
     # Check the screensaver timer to see if it's time to dim display brightness
@@ -174,16 +180,19 @@ while True:
     if _screensaver_state == "DIM":
         _new_brightness = max(display.brightness - 0.01, 0)
         display.brightness = _new_brightness
-        neo[0] = display.color_brightness(_new_brightness / 5, config.BACKGROUND_COLOR)
+        neo[0] = display.color_brightness(_new_brightness / 5, background_palette[0])
         # When the target brightness is reached, set the state to DIMMED
         if display.brightness == 0:
             _screensaver_state = "DIMMED"
+            # Change the background color randomly each time display is DIMMED
+            background_palette[0] = spectrum.color(random.randrange(0, 100)/100)
+            neo[0] = display.color_brightness(display.brightness / 5, background_palette[0])
 
     # Gradually increase display brightness while animating
     if _screensaver_state == "RESTORE":
         _new_brightness = min(display.brightness + 0.01, config.DISPLAY_BRIGHTNESS)
         display.brightness = _new_brightness
-        neo[0] = display.color_brightness(_new_brightness / 5, config.BACKGROUND_COLOR)
+        neo[0] = display.color_brightness(_new_brightness / 5, background_palette[0])
         # When the target brightness is reached, set the state to ACTIVE
         if display.brightness == config.DISPLAY_BRIGHTNESS:
             _screensaver_start_time = time.monotonic()
