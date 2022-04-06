@@ -38,10 +38,10 @@ class Configuration:
     ANIMATION_TIME = 0.3
 
     # How long before the display sleeps (seconds)
-    DISPLAY_ACTIVE_TIME = 2 * 60
+    DISPLAY_ACTIVE_TIME = 5
 
     # How long before the automatically reawakens (seconds)
-    DISPLAY_SLEEP_TIME = 30 * 60
+    DISPLAY_SLEEP_TIME = 1
 
     """# built-in display
     DISPLAY_NAME = "built-in"
@@ -63,6 +63,6 @@ class Configuration:
 
     # Whether to use a touch overlay
     USE_TOUCH_OVERLAY = True
- 
+
     # How long to wait for next valid touch event in seconds
     TOUCH_COOLDOWN = 0.1

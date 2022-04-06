@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2022 Cedar Grove Maker Studios
 # SPDX-License-Identifier: MIT
 
-# color_spectrum.py  2022-04-05 v0.0405  Cedar Grove Studios
+# color_spectrum.py  2022-04-06 v0.0406  Cedar Grove Studios
 
 # n-Color Spectral Index to RGB Converter Helper
 
@@ -33,37 +33,41 @@ class Spectrum:
     spectrum into an RGB color value. The multicolor spectrum is defined by a
     list of colors provided when the class is instantiated.
     Two spectrum modes are supported:
-      Normal mode consists of a unique start and end color. An index of 0.0
+      "light" mode consists of a unique start and end color. An index of 0.0
       produces the first color; 1.0 produces the last color in the list.
-      Wrap mode also continuously overlaps the list's first color and last color
+      "normal" mode also continuously overlaps the list's first color and last color
       when the index value is near 0.0 and 1.0.
-    A gamma value in range of 0.0 to 1.0 (1.0=linear) adjust color linearity. The
-    default of 0.5 is usually helpful for color TFT displays.
 
     :param list colors:
     :param string mode:
     :param float gamma:
 
     to do:
-      complete the "normal" spectral mode
+      investigate adding gamma
     """
-    def __init__(self, colors=None, mode="normal", gamma=0.5):
-        self._number_of_colors = len(colors)
-        if mode == "wrap":
-            # Wrapped spectrum
-            self._number_of_zones = self._number_of_colors
-        else:
-            # Normal spectrum
-            self._number_of_zones = self._number_of_colors - 1
+    def __init__(self, colors=None, mode="normal"):
+        self._colors = colors
+        self._mode = mode
+        self._index_granularity = (2 ** 16) - 1  # maximum index granularity
 
-        self._gamma = gamma
+        # Select normal or "wavelength-of-light" -style spectrum
+        if self._mode == "light":
+            self._colors.insert(0, 0x000000)
+        elif self._mode != "normal":
+            raise ValueError("Incorrect mode; only 'normal' or 'light' allowed.")
+
+        self._number_of_zones = len(self._colors)
 
         self._reds = [(r >> 16) & 0xFF for r in colors]
         self._grns = [(g >>  8) & 0xFF for g in colors]
         self._blus = [(b >>  0) & 0xFF for b in colors]
 
-        self._zones = [(zone / self._number_of_colors, (zone + 1) / self._number_of_colors) for zone in range(int(self._number_of_colors))]
+        self._zones = [(zone / self._number_of_zones, (zone + 1) / self._number_of_zones) for zone in range(int(self._number_of_zones))]
 
+
+    @property
+    def mode(self):
+        return self._mode
 
     def color(self, index=0):
         """ Converts a spectral index value to an RGB color value.
@@ -74,17 +78,19 @@ class Spectrum:
         :rtype: integer
         """
 
-        zone = int(self._number_of_colors * index)
-        next_zone = (zone + 1) % self._number_of_colors
+        self._index = ((abs(index) * self._index_granularity) % self._index_granularity) / self._index_granularity
+
+        zone = int(self._number_of_zones * index)
+        next_zone = (zone + 1) % self._number_of_zones
         zone_start = self._zones[zone][0]
         zone_end = self._zones[zone][1]
 
-        red = map_range(index, zone_start, zone_end, self._reds[zone], self._reds[next_zone])
-        grn = map_range(index, zone_start, zone_end, self._grns[zone], self._grns[next_zone])
-        blu = map_range(index, zone_start, zone_end, self._blus[zone], self._blus[next_zone])
+        red = map_range(self._index, zone_start, zone_end, self._reds[zone], self._reds[next_zone])
+        grn = map_range(self._index, zone_start, zone_end, self._grns[zone], self._grns[next_zone])
+        blu = map_range(self._index, zone_start, zone_end, self._blus[zone], self._blus[next_zone])
 
-        red = int(round(red ** self._gamma, 0))
-        grn = int(round(grn ** self._gamma, 0))
-        blu = int(round(blu ** self._gamma, 0))
+        red = int(round(red, 0))
+        grn = int(round(grn, 0))
+        blu = int(round(blu, 0))
 
         return (int(red) << 16) + (int(grn) << 8) + int(blu)
