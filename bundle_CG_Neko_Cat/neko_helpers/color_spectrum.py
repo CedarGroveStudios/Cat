@@ -29,18 +29,30 @@ def map_range(x, in_min, in_max, out_min, out_max):
 
 
 class Spectrum:
-    """ Converts a spectral index value (0.0 to 1.0) of a graduated multicolor
-    spectrum into an RGB color value. The multicolor spectrum is defined by a
-    list of colors provided when the class is instantiated.
-    Two spectrum modes are supported:
-      "light" mode consists of a unique start and end color. An index of 0.0
-      produces the first color; 1.0 produces the last color in the list.
-      "normal" mode also continuously overlaps the list's first color and last color
-      when the index value is near 0.0 and 1.0.
+    """ Converts a spectral index value consisting of a positivive numeric value
+    (0.0 to 1.0, modulus of 1.0) to an RGB color value that representing the
+    index position on a graduated and blended multicolor spectrum.
 
-    :param list colors:
-    :param string mode:
-    :param float gamma:
+    The spectrum is defined by a list of colors that are proportionally
+    distributed across the spectrum.
+
+    Two spectrum modes are supported:
+      - "light" mode produces a spectrum that mimics a typical wavelength-of-light
+        representation. The spectrum does not wrap; the first and last colors are
+        not blended to each other.
+      - "normal" mode blends the color list's first color and last color
+        when the index value is near 0.0 and 1.0.
+
+    A `gamma` value in the range of 0.0 to 1.0 will help to smooth the visual
+    transition between colors. A value of 0.5 works well with TFT displays.
+
+    :param list colors: A list of 24-bit color values. Up to 260 colors can be
+                        included in the list, depending on available memory.
+    :param string mode: Specifies the type of spectrum, "light" or "normal".
+                        Defaults to "normal".
+    :param float gamma: A positive float value to adjust color intensity for
+                        human eye perception. Accepts a range of values between
+                        0.0 and 3.0. Defaults to 0.5.
 
     to do:
       investigate adding gamma
@@ -48,7 +60,7 @@ class Spectrum:
     def __init__(self, colors=None, mode="normal", gamma=0.5):
         self._colors = colors
         self._mode = mode
-        self._gamma = gamma
+        self._gamma = min(max(gamma, 0), 3.0)
         self._index_granularity = (2 ** 16) - 1  # maximum index granularity
 
         # Select normal or "wavelength-of-light" -style spectrum
