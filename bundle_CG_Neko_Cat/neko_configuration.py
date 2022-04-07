@@ -38,10 +38,10 @@ class Configuration:
     ANIMATION_TIME = 0.3
 
     # How long before the display sleeps (seconds)
-    DISPLAY_ACTIVE_TIME = 5
+    DISPLAY_ACTIVE_TIME = 2 * 60  # two minutes
 
     # How long before the automatically reawakens (seconds)
-    DISPLAY_SLEEP_TIME = 1
+    DISPLAY_SLEEP_TIME = 30 * 60  # thirty minutes
 
     """# built-in display
     DISPLAY_NAME = "built-in"
