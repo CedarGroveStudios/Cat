@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2022 Cedar Grove Maker Studios
 # SPDX-License-Identifier: MIT
 
-# color_spectrum.py  2022-04-07 v0.0407  Cedar Grove Studios
+# color_spectrum_table.py  2022-04-07 v0.0407  Cedar Grove Studios
 
 # n-Color Spectral Index to RGB Converter Helper
 
@@ -72,12 +72,13 @@ class Spectrum:
 
         self._number_of_zones = len(self._colors)
 
-        self._reds = [((r >> 16) & 0xFF) / 0xFF for r in colors]
-        self._grns = [((g >>  8) & 0xFF) / 0xFF for g in colors]
-        self._blus = [((b >>  0) & 0xFF) / 0xFF for b in colors]
+        self._reds = [((r >> 16) & 0xFF) for r in colors]
+        self._grns = [((g >>  8) & 0xFF) for g in colors]
+        self._blus = [((b >>  0) & 0xFF) for b in colors]
 
         self._zones = [(zone / self._number_of_zones, (zone + 1) / self._number_of_zones) for zone in range(int(self._number_of_zones))]
 
+        self._gamma_correction = [int(pow(value / 0xFF, self._gamma_inverted) * 0xFF) for value in range(0, 0xFF + 1)]
 
     @property
     def mode(self):
@@ -91,6 +92,7 @@ class Spectrum:
     def gamma(self, new_gamma=1.0):
         self._gamma = new_gamma
         self._gamma_inverted = 1 / self._gamma
+        self._gamma_correction = [int(pow(value / 0xFF, self._gamma_inverted) * 0xFF) for value in range(0, 0xFF + 1)]
 
     def color(self, index=0):
         """ Converts a spectral index value to an RGB color value.
@@ -108,12 +110,12 @@ class Spectrum:
         zone_start = self._zones[zone][0]
         zone_end = self._zones[zone][1]
 
-        red = map_range(self._index, zone_start, zone_end, self._reds[zone], self._reds[next_zone])
-        grn = map_range(self._index, zone_start, zone_end, self._grns[zone], self._grns[next_zone])
-        blu = map_range(self._index, zone_start, zone_end, self._blus[zone], self._blus[next_zone])
+        red = int(map_range(self._index, zone_start, zone_end, self._reds[zone], self._reds[next_zone]))
+        grn = int(map_range(self._index, zone_start, zone_end, self._grns[zone], self._grns[next_zone]))
+        blu = int(map_range(self._index, zone_start, zone_end, self._blus[zone], self._blus[next_zone]))
 
-        red = int(round((red ** self._gamma_inverted) * 0xFF, 0))
-        grn = int(round((grn ** self._gamma_inverted) * 0xFF, 0))
-        blu = int(round((blu ** self._gamma_inverted) * 0xFF, 0))
+        red = self._gamma_correction[red]
+        grn = self._gamma_correction[grn]
+        blu = self._gamma_correction[blu]
 
         return (int(red) << 16) + (int(grn) << 8) + int(blu)
