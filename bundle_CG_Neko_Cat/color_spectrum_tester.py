@@ -29,11 +29,13 @@ VISIBLE_LIGHT = [
         0x300040,
     ]
 
-GAMMA = 1.8  # Best for TFT display
+GAMMA = 0.55  # Best for TFT display
 
 # Instantiate the background color spectrum
-spectrum1 = Spectrum(VISIBLE_LIGHT, mode="normal", gamma=GAMMA)
+tt0 = supervisor.ticks_ms()
+#spectrum1 = Spectrum(VISIBLE_LIGHT, mode="normal", gamma=GAMMA)
 spectrum2 = Spectrum(VISIBLE_LIGHT, mode="light", gamma=GAMMA)
+print(f"initialize: {(supervisor.ticks_ms() - tt0)/1000:6.3f} msec")
 
 neo_brightness = config.DISPLAY_BRIGHTNESS / 5
 
@@ -51,7 +53,7 @@ display.show(main_group)
 
 
 """time.sleep(1)
-spectrum2.gamma = 1.8"""
+spectrum2.gamma = 0.55"""
 
 tt0 = supervisor.ticks_ms()
 for i in range(1001):
@@ -70,6 +72,5 @@ while True:
     for i in range(granularity):
         color = spectrum2.color(i/granularity)
         main_group[i].fill = color
-
 
     time.sleep(3)

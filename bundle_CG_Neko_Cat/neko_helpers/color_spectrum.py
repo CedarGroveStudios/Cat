@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2022 Cedar Grove Maker Studios
 # SPDX-License-Identifier: MIT
 
-# color_spectrum.py  2022-04-07 v0.0407  Cedar Grove Studios
+# color_spectrum.py  2022-04-08 v0.0408  Cedar Grove Studios
 
 # n-Color Spectral Index to RGB Converter Helper
 
@@ -37,14 +37,18 @@ class Spectrum:
     distributed across the spectrum.
 
     Two spectrum modes are supported:
-      - "light" mode produces a spectrum that mimics a typical wavelength-of-light
-        representation. The spectrum does not wrap; the first and last colors are
-        not blended to each other.
+      - "light" mode produces a blended color spectrum that mimics a typical
+        wavelength-of-light representation. The spectrum does not wrap; the
+        first and last colors are not blended to each other.
       - "normal" mode blends the color list's first color and last color
-        when the index value is near 0.0 and 1.0.
+        when the index value is near 0.0 and 1.0, creating a continuously
+        blended spectrum.
 
     A `gamma` value in the range of 1.0 to 3.0 will help to smooth the visual
-    transition between colors. A value of 1.8 works well with TFT displays.
+    transition between colors. A value of 0.55 works well with TFT displays.
+
+    This class uses a calculate-on-the-fly approach that uses less memory than 
+    the somewhat faster correction factor table method.
 
     :param list colors: A list of 24-bit color values. Up to 260 colors can be
                         included in the list, depending on available memory.
@@ -52,16 +56,13 @@ class Spectrum:
                         Defaults to "normal".
     :param float gamma: A positive float value to adjust color intensity for
                         human eye perception. Accepts a range of values between
-                        0.0 and 3.0. Defaults to 1.8.
-
-    to do:
-      investigate adding gamma
+                        0.0 and 3.0. Defaults to 0.55.
     """
-    def __init__(self, colors=None, mode="normal", gamma=1.8):
+
+    def __init__(self, colors=None, mode="normal", gamma=0.55):
         self._colors = colors
         self._mode = mode
         self._gamma = min(max(gamma, 0), 3.0)
-        self._gamma_inverted = 1 / self._gamma
         self._index_granularity = (2 ** 16) - 1  # maximum index granularity
 
         # Select normal or "wavelength-of-light" -style spectrum
@@ -88,9 +89,8 @@ class Spectrum:
         return self._gamma
 
     @gamma.setter
-    def gamma(self, new_gamma=1.0):
+    def gamma(self, new_gamma=0.55):
         self._gamma = new_gamma
-        self._gamma_inverted = 1 / self._gamma
 
     def color(self, index=0):
         """ Converts a spectral index value to an RGB color value.
@@ -112,8 +112,8 @@ class Spectrum:
         grn = map_range(self._index, zone_start, zone_end, self._grns[zone], self._grns[next_zone])
         blu = map_range(self._index, zone_start, zone_end, self._blus[zone], self._blus[next_zone])
 
-        red = int(round((red ** self._gamma_inverted) * 0xFF, 0))
-        grn = int(round((grn ** self._gamma_inverted) * 0xFF, 0))
-        blu = int(round((blu ** self._gamma_inverted) * 0xFF, 0))
+        red = int(round((red ** self._gamma) * 0xFF, 0))
+        grn = int(round((grn ** self._gamma) * 0xFF, 0))
+        blu = int(round((blu ** self._gamma) * 0xFF, 0))
 
         return (int(red) << 16) + (int(grn) << 8) + int(blu)
