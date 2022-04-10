@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2022 TimCocks for Adafruit Industries
 #
 # SPDX-License-Identifier: MIT
-# Cedar Grove display, screensaver, and config changes: 2022-04-06 v0.0406
+# Cedar Grove display, screensaver, and config changes: 2022-04-09 v0.0409
 
 import gc
 import time
@@ -12,7 +12,7 @@ import vectorio
 import neopixel
 import adafruit_imageload
 from neko_helpers.neko import NekoAnimatedSprite
-from neko_helpers.color_spectrum import Spectrum
+from cedargrove_unit_converter.index_to_rgb.n_color_spectrum import Spectrum
 from neko_configuration import Configuration as config
 import neko_helpers.cedargrove_display as cedargrove_display
 
@@ -29,7 +29,7 @@ neo = neopixel.NeoPixel(board.NEOPIXEL, 1)
 neo[0] = display.color_brightness(config.DISPLAY_BRIGHTNESS / 8, config.BKG_SPECTRUM[0])
 
 # Instantiate the background color spectrum
-spectrum = Spectrum(config.BKG_SPECTRUM, mode="normal", gamma=0.5)
+spectrum = Spectrum(config.BKG_SPECTRUM, mode="continuous", gamma=0.5)
 
 # Variable to store the timestamp of previous touch event
 LAST_TOUCH_TIME = -1

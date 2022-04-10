@@ -1,9 +1,9 @@
 # SPDX-FileCopyrightText: 2022 Cedar Grove Maker Studios
 # SPDX-License-Identifier: MIT
 
-# color_spectrum_table.py  2022-04-08 v0.0408  Cedar Grove Studios
+# n_color_spectrum_table.py  2022-04-09 v0.0409  Cedar Grove Studios
 
-# n-Color Spectral Index to RGB Converter Helper
+# n-Color Spectrum Index to RGB Converter Helper
 
 
 def map_range(x, in_min, in_max, out_min, out_max):
@@ -29,20 +29,19 @@ def map_range(x, in_min, in_max, out_min, out_max):
 
 
 class Spectrum:
-    """ Converts a spectral index value consisting of a positivive numeric value
+    """ Converts a spectrum index value consisting of a positivive numeric value
     (0.0 to 1.0, modulus of 1.0) to an RGB color value that representing the
     index position on a graduated and blended multicolor spectrum.
 
     The spectrum is defined by a list of colors that are proportionally
     distributed across the spectrum.
 
-    Two spectrum modes are supported:
+    Two spectrum modes are currently supported:
       - "light" mode produces a blended color spectrum that mimics a typical
         wavelength-of-light representation. The spectrum does not wrap; the
         first and last colors are not blended to each other.
-      - "normal" mode blends the color list's first color and last color
-        when the index value is near 0.0 and 1.0, creating a continuously
-        blended spectrum.
+      - "continuous" mode blends the color list's first color and last color
+        at the start and end, creating a continuously blended spectrum.
 
     A `gamma` value in the range of 1.0 to 3.0 will help to smooth the visual
     transition between colors. A value of 0.55 works well with TFT displays.
@@ -68,8 +67,8 @@ class Spectrum:
         # Select normal or "wavelength-of-light" -style spectrum
         if self._mode == "light":
             self._colors.insert(0, 0x000000)
-        elif self._mode != "normal":
-            raise ValueError("Incorrect mode; only 'normal' or 'light' allowed.")
+        elif self._mode != "continuous":
+            raise ValueError("Incorrect mode; only 'continuous' or 'light' allowed.")
 
         self._number_of_zones = len(self._colors)
 
@@ -95,7 +94,7 @@ class Spectrum:
         self._gamma_correction = [int(pow(value / 0xFF, self._gamma) * 0xFF) for value in range(0, 0xFF + 1)]
 
     def color(self, index=0):
-        """ Converts a spectral index value to an RGB color value.
+        """ Converts a spectrum index value to an RGB color value.
 
         :param float index:
 
