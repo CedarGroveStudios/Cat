@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2022 Cedar Grove Maker Studios
+# SPDX-License-Identifier: MIT
+#
+# n_color_spectrum_tester.py  2022-04-19 v0.0419  Cedar Grove Studios
+
 
 import gc
 import time
@@ -20,23 +25,43 @@ ts = display.ts
 main_group = displayio.Group()
 
 # Define a few test spectra
-#   about 264 colors before the pystack is exhausted
-#   first color will blend with last color unless mode="light"
+#   about 264 colors can be defined per spectrum before the pystack is exhausted
+#   first color will blend with last color unless mode = "light"
+#
+# Color definitions are from:
+#  https://en.wikipedia.org/wiki/List_of_colors:_A–F
+#  https://en.wikipedia.org/wiki/List_of_colors:_G–M
+#  https://en.wikipedia.org/wiki/List_of_colors:_N–Z
+
 VISIBLE = [
+    # Newtonian primay colors
     0xFF0000,  # Red
+    0xFF7F00,  # Orange
+    0xFFFF00,  # Yellow
     0x00FF00,  # Green
     0x0000FF,  # Blue
+    0x4B0082,  # Indigo
     0x300040,  # Violet
 ]
 
 IRON = [
-    0x202040,  # Dark Gray
+    0x202040,  # Dark Gray (coolest)
     0x0000FF,  # Blue
     0xA000FF,  # Violet
     0xFF0000,  # Red
     0xFF8000,  # Orange
-    #0xFFFF00,  # Yellow
-    0xFFFFFF,  # White
+    #0xFFFF00,  # Yellow (optional)
+    0xFFFFFF,  # White (warmest)
+]
+
+FALSE_THERMO = [
+    0x202040,  # Dark Gray (coolest)
+    0x0000FF,  # Blue
+    0x00FF00,  # Green
+    0xFFFF00,  # Yellow
+    0xFF7F00,  # Orange
+    0xFF0000,  # Red
+    0xFF00FF,  # Magenta (warmest)
 ]
 
 STOPLIGHT = [
@@ -45,7 +70,7 @@ STOPLIGHT = [
     0x00FF00,  # Green
 ]
 
-GAMMA = 0.55  # Best for TFT display
+GAMMA = 0.80  # 0.45 to 0.80 is best for TFT display
 
 # Instantiate the color spectrum
 gc.collect()
@@ -68,7 +93,7 @@ for i in range(granularity):
 display.show(main_group)
 
 # This does something wierd and reduces the benchmark execution time
-#   significantly just for the table version
+#   significantly just for the table version; don't know why
 #spectrum.gamma = 0.55
 
 # Perform a 1000 count benchmark

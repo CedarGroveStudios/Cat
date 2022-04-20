@@ -172,6 +172,7 @@ while True:
     # Check the screensaver timer to see if it's time to dim display brightness
     if _screensaver_state == "ACTIVE" and time.monotonic() - _screensaver_start_time >= config.DISPLAY_ACTIVE_TIME:
         _screensaver_state = "DIM"
+
     # Check the screensaver timer to see if the display brightness should be restored
     if _screensaver_state == "DIMMED" and time.monotonic() - _screensaver_start_time >= config.DISPLAY_ACTIVE_TIME + config.DISPLAY_SLEEP_TIME:
         _screensaver_state = "RESTORE"

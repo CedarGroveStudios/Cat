@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2022 Cedar Grove Maker Studios
 # SPDX-License-Identifier: MIT
 
-# n_color_spectrum.py  2022-04-09 v0.0409  Cedar Grove Studios
+# n_color_spectrum.py  2022-04-19 v0.0419  Cedar Grove Studios
 
 # n-Color Spectrum Index to RGB Converter Helper
 
@@ -42,6 +42,12 @@ class Spectrum:
         first and last colors are not blended to each other.
       - "continuous" mode blends the color list's first color and last color
         at the start and end, creating a continuously blended spectrum.
+
+    Future modes may include:
+      - "stacked" spectrum with the first color at full brightness with
+        index = 0.0; last color aat full brightness when index = 1.0.
+      - "wrapped" is the same as "stacked" except final color is blended with
+        the first as the index approaches 1.0.
 
     A `gamma` value in the range of 1.0 to 3.0 will help to smooth the visual
     transition between colors. A value of 0.55 works well with TFT displays.
