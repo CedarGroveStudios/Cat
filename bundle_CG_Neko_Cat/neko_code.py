@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2022 TimCocks for Adafruit Industries
 #
 # SPDX-License-Identifier: MIT
-# Cedar Grove display, screensaver, and config changes: 2022-04-09 v0.0409
+# Cedar Grove display, screensaver, lib, and config changes: 2022-12-13 1.0.0
 
 import gc
 import time
@@ -12,15 +12,16 @@ import vectorio
 import neopixel
 import adafruit_imageload
 from neko_helpers.neko import NekoAnimatedSprite
-from cedargrove_unit_converter.index_to_rgb.n_color_spectrum import Spectrum
+from cedargrove_rgb_spectrumtools.n_color import Spectrum
 from neko_configuration import Configuration as config
 import neko_helpers.cedargrove_display as cedargrove_display
 
 # Instantiate the display and touchscreen
 display = cedargrove_display.Display(
     name=config.DISPLAY_NAME,
+    rotation=config.ROTATION,
     calibration=config.CALIBRATION,
-    brightness= config.DISPLAY_BRIGHTNESS,
+    brightness=config.DISPLAY_BRIGHTNESS,
 )
 ts = display.ts
 
@@ -172,7 +173,6 @@ while True:
     # Check the screensaver timer to see if it's time to dim display brightness
     if _screensaver_state == "ACTIVE" and time.monotonic() - _screensaver_start_time >= config.DISPLAY_ACTIVE_TIME:
         _screensaver_state = "DIM"
-
     # Check the screensaver timer to see if the display brightness should be restored
     if _screensaver_state == "DIMMED" and time.monotonic() - _screensaver_start_time >= config.DISPLAY_ACTIVE_TIME + config.DISPLAY_SLEEP_TIME:
         _screensaver_state = "RESTORE"

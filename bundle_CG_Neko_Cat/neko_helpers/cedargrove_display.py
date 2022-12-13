@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2022 Cedar Grove Maker Studios
 # SPDX-License-Identifier: MIT
 
-# cedargrove_display.py  2022-04-04 v0.0404  Cedar Grove Studios
+# cedargrove_display.py  2022-11-30 1.0.0 Cedar Grove Studios
 
 import board
 import digitalio
@@ -157,7 +157,7 @@ class Display:
         """The display rotation value in degrees.
         :param integer new_value
         """
-        return self.display._rotation
+        return self.display.rotation
 
     @rotation.setter
     def rotation(self, new_rotation):

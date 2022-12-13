@@ -38,10 +38,10 @@ class Configuration:
     ANIMATION_TIME = 0.3
 
     # How long before the display sleeps (seconds)
-    DISPLAY_ACTIVE_TIME = 2 * 60  # two minutes
+    DISPLAY_ACTIVE_TIME = 10 * 60  # ten minutes
 
     # How long before the automatically reawakens (seconds)
-    DISPLAY_SLEEP_TIME = 30 * 60  # thirty minutes
+    DISPLAY_SLEEP_TIME = 20 * 60  # twenty minutes
 
     """# built-in display
     DISPLAY_NAME = "built-in"
@@ -51,8 +51,8 @@ class Configuration:
 
     # TFT FeatherWing - 2.4" 320x240 Touchscreen
     DISPLAY_NAME = "2.4-inch"
-    CALIBRATION = ((277, 3872), (357, 3685))
-    ROTATION = 0
+    CALIBRATION = ((406, 3607), (412, 3711))
+    ROTATION = 180
     DISPLAY_BRIGHTNESS = 1.0
 
     """# TFT FeatherWing - 3.5" 480x320 Touchscreen
